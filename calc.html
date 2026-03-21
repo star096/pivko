@@ -145,15 +145,15 @@
   <header>
     <h1>Прості калькулятори</h1>
   <nav>
-    <a href="/calc/" data-page="home" class="active">Головна</a>
-    <a href="/calc/tumba" data-page="tumba">Тумбочка</a>
-    <a href="/calc/vidpustka" data-page="vidpustka">Відпускні</a>
-    <a href="/calc/yo" data-page="yo">У.О.</a>
-    <a href="/calc/banknote" data-page="banknote">Банкноти</a>
-    <a href="/calc/compare" data-page="compare">Порівняння</a>
-    <a href="/calc/drako" data-page="drako">Гра</a>
-    <a href="/calc/forlist" data-page="forlist">forlist</a>
-    <a href="/calc/powerbank" data-page="powerbank">powerbank</a>
+    <a href="/calc.html#home" class="active">Головна</a>
+    <a href="/calc.html#tumba">Тумбочка</a>
+    <a href="/calc.html#vidpustka" data-page="vidpustka">Відпускні</a>
+    <a href="/calc.html#yo" data-page="yo">У.О.</a>
+    <a href="/calc.html#banknote" data-page="banknote">Банкноти</a>
+    <a href="/calc.html#compare" data-page="compare">Порівняння</a>
+    <a href="/calc.html#drako" data-page="drako">Гра</a>
+    <a href="/calc.html#forlist">forlist</a>
+    <a href="/calc.html#powerbank" data-page="powerbank">powerbank</a>
     <a href="#" data-page="stil">Пусто</a>
   </nav>
 
@@ -177,51 +177,46 @@
   </footer>
 
   <script>
-    const pathToPageMap = {
-  '/calc/': 'https://smska.biz.ua/calc/home.html',
-  '/calc/home': 'https://smska.biz.ua/calc/home.html',
-  '/calc/tumba': 'https://smska.biz.ua/calc/pages/tumba.html',
-  '/calc/vidpustka': 'https://smska.biz.ua/calc/pages/vidpustka.html',
-  '/calc/yo': 'https://smska.biz.ua/calc/pages/yo.html',
-  '/calc/banknote': 'https://smska.biz.ua/calc/pages/banknote.html',
-  '/calc/compare': 'https://smska.biz.ua/calc/pages/compare.html',
-  '/calc/drako': 'https://smska.biz.ua/calc/pages/drako.html',
-  '/calc/forlist': 'https://smska.biz.ua/calc/pages/forlist.html',
-  '/calc/word': 'https://smska.biz.ua/calc/pages/word.html',
-  '/calc/powerbank': 'https://smska.biz.ua/calc/pages/powerbank.html',
+const pageMap = {
+  home: 'https://smska.biz.ua/calc/home.html',
+  tumba: 'https://smska.biz.ua/calc/pages/tumba.html',
+  vidpustka: 'https://smska.biz.ua/calc/pages/vidpustka.html',
+  yo: 'https://smska.biz.ua/calc/pages/yo.html',
+  banknote: 'https://smska.biz.ua/calc/pages/banknote.html',
+  compare: 'https://smska.biz.ua/calc/pages/compare.html',
+  drako: 'https://smska.biz.ua/calc/pages/drako.html',
+  forlist: 'https://smska.biz.ua/calc/pages/forlist.html',
+  word: 'https://smska.biz.ua/calc/pages/word.html',
+  powerbank: 'https://smska.biz.ua/calc/pages/powerbank.html',
 };
 
-function loadPageFromPath() {
-  const path = window.location.pathname.replace(/\/$/, '') || '/calc/home';
-  const iframeSrc = pathToPageMap[path] || '/calc/pages/404.html'; // У випадку 404
+function loadPageFromHash() {
+  const hash = window.location.hash.replace('#', '') || 'home';
+  const iframeSrc = pageMap[hash] || 'https://smska.biz.ua/calc/pages/404.html';
+
   document.getElementById('pageFrame').src = iframeSrc;
 
   document.querySelectorAll('nav a').forEach(link => {
     link.classList.remove('active');
-    if (link.getAttribute('href') === 'http://smska.biz.ua' + path) {
+    if (link.getAttribute('href') === `/calc.html#${hash}`) {
       link.classList.add('active');
     }
   });
 
-  const url = 'http://smska.biz.ua' + window.location.pathname; // Абсолютний URL
-  document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${encodeURIComponent(url)}`;
-  document.getElementById('shareViber').href = `viber://forward?text=${encodeURIComponent(url)}`;
-  document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-  document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`;
+  const url = window.location.origin + '/calc.html#' + hash;
+
+  document.getElementById('shareTelegram').href =
+    `https://t.me/share/url?url=${encodeURIComponent(url)}`;
+  document.getElementById('shareViber').href =
+    `viber://forward?text=${encodeURIComponent(url)}`;
+  document.getElementById('shareFacebook').href =
+    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  document.getElementById('shareTwitter').href =
+    `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`;
 }
 
-document.querySelectorAll('nav a').forEach(link => {
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    const href = link.getAttribute('href');
-    history.pushState({}, '', href);
-    loadPageFromPath();
-  });
-});
-
-window.addEventListener('popstate', loadPageFromPath);
-window.addEventListener('DOMContentLoaded', loadPageFromPath);
-
+window.addEventListener('hashchange', loadPageFromHash);
+window.addEventListener('DOMContentLoaded', loadPageFromHash);
   </script>
 
 </body>
