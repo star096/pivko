@@ -2,12 +2,8 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-<link rel="icon" type="image/png" sizes="16x16" href="https://smska.biz.ua/wp-content/uploads/2025/07/beer.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://smska.biz.ua/wp-content/uploads/2025/07/beer.png">
-<link rel="icon" type="image/png" sizes="48x48" href="https://smska.biz.ua/wp-content/uploads/2025/07/beer.png">
-  <title>Пивасик</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Розподіл Суми</title>
   <style>
     * {
       margin: 0;
@@ -117,7 +113,7 @@
 </div>
 
 <div class="content">
-  <h2>💸</h2>
+  <h2>Скільки з кого?</h2>
 
   <form class="form-container" onsubmit="calculate(); return false;">
     <input type="number" id="total" placeholder="Загальна сума" required>
@@ -180,7 +176,7 @@
   function sendTelegram() {
     const card = document.getElementById('card').value.trim();
     if (lastAmount > 0 && card !== "") {
-      const message = `З кожного ${lastAmount} грн. Сюди ${card}`;
+      const message = `З кожного учасника ${lastAmount} грн. Сюди ${card}`;
 
       navigator.clipboard.writeText(message).then(() => {
         // Показуємо повідомлення про копіювання
@@ -188,12 +184,12 @@
         copyMsg.innerText = "Текст скопійовано у буфер обміну. Відкриваю Telegram...";
         
         // Відкриваємо Telegram
-        window.location.href = "tg://msg?text=" + encodeURIComponent(message);
+        window.open("https://t.me/", "_blank");
 
-        // Прибрати повідомлення через 10 секунд
+        // Прибрати повідомлення через 4 секунди
         setTimeout(() => {
           copyMsg.innerText = '';
-        }, 10000);
+        }, 4000);
 
       }).catch(err => {
         const copyMsg = document.getElementById('copyMessage');
@@ -212,7 +208,7 @@
       setTimeout(() => {
         copyMsg.innerText = '';
         copyMsg.style.color = '#4CAF50';
-      }, 10000);
+      }, 4000);
     }
   }
 </script>
