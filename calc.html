@@ -117,6 +117,23 @@
     .facebook { background-color: #3b5998; }
     .twitter { background-color: #1da1f2; }
 
+    .copy {
+  display: inline-block;
+  margin: 5px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #2ecc71; /* зелений для виділення */
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.copy:hover {
+  background-color: #27ae60;
+}
+
     footer {
       text-align: center;
       padding: 1.5rem 1rem;
@@ -169,6 +186,7 @@
       <a id="shareViber" class="viber" target="_blank">Поділитись у Viber</a>
       <a id="shareFacebook" class="facebook" target="_blank">Facebook</a>
       <a id="shareTwitter" class="twitter" target="_blank">Twitter</a>
+          <a id="copyLink" class="copy" href="#">Копіювати посилання</a>
     </div>
     <div class="frame-wrapper">
       <iframe id="pageFrame" src=""></iframe>
@@ -220,6 +238,17 @@ function loadPageFromHash() {
 
 window.addEventListener('hashchange', loadPageFromHash);
 window.addEventListener('DOMContentLoaded', loadPageFromHash);
+
+    // копіювання посилання
+    document.getElementById('copyLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  const fullUrl = window.location.href; // поточний URL з #hash
+  navigator.clipboard.writeText(fullUrl).then(() => {
+    alert('Посилання скопійовано!'); // або можна зробити красиве повідомлення
+  }).catch(() => {
+    alert('Не вдалося скопіювати посилання');
+  });
+});
   </script>
 
 </body>
