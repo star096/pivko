@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Прості калькулятори</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #3498db;
+      --hover-bg: #e0f0ff;
+      --bg-color: #f0f6fc;
+      --card-bg: #ffffff;
+      --border-color: #d0e2f2;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--primary-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--card-bg);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: center;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: var(--accent-color);
+    }
+
+    nav {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    nav a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background-color: var(--hover-bg);
+      border-color: var(--accent-color);
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      padding: 0 20px;
+    }
+
+    .frame-wrapper {
+      max-width: 1100px;
+      margin: 30px auto;
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100%;
+      height: 1300px;
+      border: none;
+      background: white;
+    }
+
+    .share-buttons {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .share-buttons a {
+      display: inline-block;
+      margin: 5px;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: white;
+      text-decoration: none;
+    }
+
+    .telegram { background-color: #0088cc; }
+    .viber { background-color: #665cac; }
+    .facebook { background-color: #3b5998; }
+    .twitter { background-color: #1da1f2; }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background-color: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      font-size: 0.9rem;
+      color: var(--primary-color);
+      border-radius: var(--radius) var(--radius) 0 0;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  nav a {
+    padding: 0.4rem 0.8rem;
+  }
+
+  iframe {
+    height: 1000px; /* обмеження максимум до 1000px */
+    max-height: 1300px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Прості калькулятори</h1>
+  <nav>
+    <a href="/calc/" data-page="home" class="active">Головна</a>
+    <a href="/calc/tumba" data-page="tumba">Тумбочка</a>
+    <a href="/calc/vidpustka" data-page="vidpustka">Відпускні</a>
+    <a href="/calc/yo" data-page="yo">У.О.</a>
+    <a href="/calc/banknote" data-page="banknote">Банкноти</a>
+    <a href="/calc/compare" data-page="compare">Порівняння</a>
+    <a href="/calc/drako" data-page="drako">Гра</a>
+    <a href="/calc/forlist" data-page="forlist">forlist</a>
+    <a href="/calc/powerbank" data-page="powerbank">powerbank</a>
+    <a href="#" data-page="stil">Пусто</a>
+  </nav>
+
+  </header>
+
+  <main>
+    <div class="frame-wrapper">
+      <iframe id="pageFrame" src=""></iframe>
+    </div>
+
+    <div class="share-buttons">
+      <a id="shareTelegram" class="telegram" target="_blank">Поділитись в Telegram</a>
+      <a id="shareViber" class="viber" target="_blank">Поділитись у Viber</a>
+      <a id="shareFacebook" class="facebook" target="_blank">Facebook</a>
+      <a id="shareTwitter" class="twitter" target="_blank">Twitter</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Мій Сайт. Всі права захищені.
+  </footer>
+
+  <script>
+    const pathToPageMap = {
+  '/calc/': 'https://smska.biz.ua/calc/home.html',
+  '/calc/home': 'https://smska.biz.ua/calc/home.html',
+  '/calc/tumba': 'https://smska.biz.ua/calc/pages/tumba.html',
+  '/calc/vidpustka': 'https://smska.biz.ua/calc/pages/vidpustka.html',
+  '/calc/yo': 'https://smska.biz.ua/calc/pages/yo.html',
+  '/calc/banknote': 'https://smska.biz.ua/calc/pages/banknote.html',
+  '/calc/compare': 'https://smska.biz.ua/calc/pages/compare.html',
+  '/calc/drako': 'https://smska.biz.ua/calc/pages/drako.html',
+  '/calc/forlist': 'https://smska.biz.ua/calc/pages/forlist.html',
+  '/calc/word': 'https://smska.biz.ua/calc/pages/word.html',
+  '/calc/powerbank': 'https://smska.biz.ua/calc/pages/powerbank.html',
+};
+
+function loadPageFromPath() {
+  const path = window.location.pathname.replace(/\/$/, '') || '/calc/home';
+  const iframeSrc = pathToPageMap[path] || '/calc/pages/404.html'; // У випадку 404
+  document.getElementById('pageFrame').src = iframeSrc;
+
+  document.querySelectorAll('nav a').forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === 'http://smska.biz.ua' + path) {
+      link.classList.add('active');
+    }
+  });
+
+  const url = 'http://smska.biz.ua' + window.location.pathname; // Абсолютний URL
+  document.getElementById('shareTelegram').href = `https://t.me/share/url?url=${encodeURIComponent(url)}`;
+  document.getElementById('shareViber').href = `viber://forward?text=${encodeURIComponent(url)}`;
+  document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`;
+}
+
+document.querySelectorAll('nav a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const href = link.getAttribute('href');
+    history.pushState({}, '', href);
+    loadPageFromPath();
+  });
+});
+
+window.addEventListener('popstate', loadPageFromPath);
+window.addEventListener('DOMContentLoaded', loadPageFromPath);
+
+  </script>
+
+</body>
+</html>
