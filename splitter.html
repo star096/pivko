@@ -12,6 +12,7 @@
             --card-bg: #ffffff;
             --text: #1e293b;
             --border: #cbd5e1;
+            --copied-color: #10b981; /* Зелений для скопійованого */
         }
 
         body {
@@ -94,6 +95,36 @@
             padding-top: 20px;
         }
 
+        /* Панель швидких кнопок вгорі */
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .btn-quick-copy {
+            background-color: #ffffff;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-quick-copy:hover {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        /* Картки з блоками тексту */
         .block-card {
             background: #f1f5f9;
             border: 1px solid var(--border);
@@ -129,8 +160,15 @@
             background-color: var(--primary-hover);
         }
 
-        .btn-copy.copied {
-            background-color: #10b981;
+        /* Стилі для вже СКОПІЙОВАНИХ кнопок (залишаються такими) */
+        .btn-copy.was-copied {
+            background-color: var(--copied-color) !important;
+        }
+
+        .btn-quick-copy.was-copied {
+            background-color: #d1fae5 !important;
+            border-color: var(--copied-color) !important;
+            color: #065f46 !important;
         }
 
         .block-content {
@@ -151,7 +189,7 @@
     <h1>✂️ Розділювач тексту по рядках</h1>
     
     <div class="form-group">
-        <label for="textInput">Вставте ваш текст сюди:</label>
+        <label for="textInput">Вставте ваш text сюди:</label>
         <textarea id="textInput" placeholder="Введіть або вставте багато рядків тексту..."></textarea>
         <div class="stats" id="lineCount">Всього рядків: 0</div>
     </div>
@@ -164,7 +202,10 @@
     </div>
 
     <div class="results-container" id="resultsContainer" style="display: none;">
-        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Результати розділення:</h2>
+        <h2 style="font-size: 1.2rem; margin-bottom: 10px;">Швидке копіювання блоків:</h2>
+        <div class="quick-nav" id="quickNavContainer"></div>
+
+        <h2 style="font-size: 1.2rem; margin-top: 20px; margin-bottom: 15px;">Результати розділення:</h2>
         <div id="blocksList"></div>
     </div>
 </div>
@@ -174,24 +215,35 @@
     const linesPerBlockInput = document.getElementById('linesPerBlock');
     const lineCountDisplay = document.getElementById('lineCount');
     const resultsContainer = document.getElementById('resultsContainer');
+    const quickNavContainer = document.getElementById('quickNavContainer');
     const blocksList = document.getElementById('blocksList');
 
-    // Обробка подій для миттєвого реагування
-    textInput.addEventListener('input', processText);
-    linesPerBlockInput.addEventListener('input', processText);
+    // Об’єкт для збереження історії копіювання (щоб колір не зникав при зміні налаштувань, поки текст той самий)
+    let copiedBlocksHistory = {};
+
+    textInput.addEventListener('input', () => {
+        // Якщо текст змінився повністю, скидаємо історію кліків
+        copiedBlocksHistory = {};
+        processText();
+    });
+    
+    linesPerBlockInput.addEventListener('input', () => {
+        // При зміні кількості рядків теж скидаємо, бо блоки стають іншими
+        copiedBlocksHistory = {};
+        processText();
+    });
 
     function processText() {
         const text = textInput.value;
-        // Розбиваємо текст на рядки (враховуємо різні переноси рядків)
         const lines = text.split(/\r?\n/);
-        
-        // Якщо текст порожній, не рахуємо порожній рядок
         const totalLines = text.trim() === "" ? 0 : lines.length;
+        
         lineCountDisplay.textContent = `Всього рядків: ${totalLines}`;
 
         if (totalLines === 0) {
             resultsContainer.style.display = 'none';
             blocksList.innerHTML = '';
+            quickNavContainer.innerHTML = '';
             return;
         }
 
@@ -200,24 +252,46 @@
 
         resultsContainer.style.display = 'block';
         blocksList.innerHTML = '';
+        quickNavContainer.innerHTML = '';
 
         let blockIndex = 1;
         
         for (let i = 0; i < lines.length; i += linesPerBlock) {
-            // Беремо шматок рядків для поточного блоку
             const chunk = lines.slice(i, i + linesPerBlock);
             const chunkText = chunk.join('\n');
 
-            // Створюємо елементи інтерфейсу
+            // 1. Створюємо швидку кнопку для верхньої панелі
+            const quickBtn = document.createElement('button');
+            quickBtn.className = 'btn-quick-copy';
+            quickBtn.id = `quick-btn-${blockIndex}`;
+            quickBtn.textContent = `Копіювати Блок ${blockIndex}`;
+            // Перевіряємо, чи копіювали його раніше
+            if (copiedBlocksHistory[blockIndex]) {
+                quickBtn.classList.add('was-copied');
+                quickBtn.textContent = `Блок ${blockIndex} ✓`;
+            }
+            
+            // Навішуємо подію кліку
+            quickBtn.addEventListener('click', (el) => triggerCopy(blockIndex));
+            quickNavContainer.appendChild(quickBtn);
+
+            // 2. Створюємо картку з текстом знизу
             const blockCard = document.createElement('div');
             blockCard.className = 'block-card';
 
             const blockHeader = document.createElement('div');
             blockHeader.className = 'block-header';
+            
+            const mainBtnClass = copiedBlocksHistory[blockIndex] ? 'btn-copy was-copied' : 'btn-copy';
+            const mainBtnText = copiedBlocksHistory[blockIndex] ? 'Скопійовано! ✓' : 'Копіювати';
+
             blockHeader.innerHTML = `
                 <span>Блок ${blockIndex} (${chunk.length} рядк.)</span>
-                <button class="btn-copy" onclick="copyBlock(this, ${blockIndex})">Копіювати</button>
+                <button class="${mainBtnClass}" id="main-btn-${blockIndex}">\${mainBtnText}</button>
             `;
+
+            // Навішуємо подію на головну кнопку картки
+            blockHeader.querySelector('.btn-copy').addEventListener('click', () => triggerCopy(blockIndex));
 
             const blockContent = document.createElement('pre');
             blockContent.className = 'block-content';
@@ -232,24 +306,30 @@
         }
     }
 
-    // Функція для копіювання
-    function copyBlock(button, index) {
+    // Головна функція копіювання, яка синхронізує обидві кнопки
+    function triggerCopy(index) {
         const preElement = document.getElementById(`block-text-${index}`);
-        
-        // Використовуємо сучасний Clipboard API
+        if (!preElement) return;
+
         navigator.clipboard.writeText(preElement.textContent).then(() => {
-            // Візуальний фідбек при успішному копіюванні
-            const originalText = button.textContent;
-            button.textContent = 'Скопійовано! ✓';
-            button.classList.add('copied');
-            
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('copied');
-            }, 1500);
+            // Записуємо в історію, що цей блок скопійовано
+            copiedBlocksHistory[index] = true;
+
+            // Оновлюємо верхню кнопку
+            const quickBtn = document.getElementById(`quick-btn-${index}`);
+            if (quickBtn) {
+                quickBtn.classList.add('was-copied');
+                quickBtn.textContent = `Блок ${index} ✓`;
+            }
+
+            // Оновлюємо кнопку всередині картки
+            const mainBtn = document.getElementById(`main-btn-${index}`);
+            if (mainBtn) {
+                mainBtn.classList.add('was-copied');
+                mainBtn.textContent = 'Скопійовано! ✓';
+            }
         }).catch(err => {
             console.error('Помилка копіювання: ', err);
-            alert('Не вдалося скопіювати текст.');
         });
     }
 </script>
