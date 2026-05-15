@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Генератор посилань на артикули</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #2c3e50;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    select {
+      margin-top: 5px;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .textarea-wrapper {
+      position: relative;
+      margin-top: 15px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      padding-right: 30px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    #clear_icon {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+      line-height: 1;
+      display: none;
+    }
+    #clear_icon:hover {
+      color: #e74c3c;
+    }
+    button.action-btn {
+      margin-top: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button.action-btn:hover {
+      background-color: #2980b9;
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+    }
+    pre {
+      background-color: #ecf0f1;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .note {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f0f8ff;
+      border-left: 4px solid #3498db;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Генератор посилань на артикули v4.25</h2>
+
+    <label for="site_mode">Оберіть сайт:</label>
+    <select id="site_mode">
+      <option value="avdauto">avdauto.com</option>
+      <option value="repart">repart.ua (part)</option>
+      <option value="repart-img">repart.ua (imgs)</option>
+      <option value="dayco-img">dayco (prodimgs)</option>
+      <option value="as-pl">as-pl.com</option>
+      <option value="asmetal">asmetal.com</option>
+      <option value="bga">bgautomotive.co.uk (imgs)</option>
+      <option value="tesma">tesma.com.ua (ASAM)</option>
+      <option value="autotechteile">autotechteile.de</option>
+      <option value="jpgroup">jpgroup.dk (images)</option>
+      <option value="sidem">sidem.be (images)</option>
+      <option value="febi">febi bilstein (images)</option>
+      <option value="partfix">partfix.net (AS METAL, FEBEST, KYB)</option>
+      <option value="mannfilter">mann-filter.com</option>
+      <option value="bestauto">bestauto.com.ua (multi brand imgs)*</option>
+      <option value="slturbo">turbobanda.com.ua (SLTURBO imgs)</option>
+    </select>
+
+<div class="checkbox-wrap">
+  <label>
+    <input type="checkbox" id="exclude_brands" />
+    Виключити бренди: HYUNDAI, KIA, PEUGEOT, CITROEN, RENAULT, TOYOTA, MITSUBISHI та інші атомобільні бренди.
+  </label>
+</div>
+
+<div class="checkbox-wrap">
+  <label>
+    <input type="checkbox" id="auto_source_by_brand" />
+    Автоматично підбирати джерело зображення за брендом *(тільки для imgs)
+  </label>
+</div>
+
+    <div id="note-autotechteile" class="note">Клас для пошуку фото — <code>search-result-image</code></div>
+    <div id="note-jpgroup" class="note">По JP GROUP генеруються прямі посилання для скачуання потірбних зображень, типу - <code>https://media.jpgroup.dk/pictures/zoom/4381203800.jpg</code> Можуть бути ще мальнікі фото - https://media.jpgroup.dk/pictures/product/1581205900.jpg</div>
+    <div id="note-avdauto" class="note">Формат: /detail/АРТИКУЛ/БРЕНД/</div>
+    <div id="note-repart" class="note">Формат: /part/БРЕНД-АРТИКУЛ</div>
+    <div id="note-repart-img" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /imgs/БРЕНД/АРТИКУЛ.webp</div>
+    <div id="note-dayco-img" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /prodimgs/area1/АРТИКУЛ.jpg</div>
+    <div id="note-as-pl" class="note">Формат: /ru/p/АРТИКУЛ</div>
+    <div id="note-asmetal" class="note">Формат: /catalogue/product/АРТИКУЛ</div>
+    <div id="note-bga" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /ProductImages/АРТИКУЛ.jpg</div>
+    <div id="note-tesma" class="note">Формат: /products/БРЕНД/АРТИКУЛ.html</div>
+    <div id="note-sidem" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /uploads/parts/АРТИКУЛ.jpg</div>
+    <div id="note-febi" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /pf-article-zoomed/1/АРТИКУЛ_1.jpg</div>
+    <div id="note-partfix" class="note">Формат: /БРЕНД/АРТИКУЛ.html Клас для пошуку фото — card__main-img</div>
+    <div id="note-mannfilter" class="note">Формат: /product.html/АРТИКУЛбезпробілів_mann-filter.html Клас для пошуку фото — cmp-product__gallery-container--dynamic</div>
+    <div id="note-bestauto" class="note">Генеруються прямі посилання для скачуання потірбних зображень, типу - <code>https://bestauto.com.ua/imgs/goodrem/АРТИКУЛ_460x330.webp</code> <br>A.B.S., MOOG, FAST ... *є багато різних брендів, потрібно перевіряти</div>
+    <div id="note-slturbo" class="note">Генеруються прямі посилання для скачування зображень, типу -
+      <code>https://turbobanda.com.ua/image/cache/catalog/image/catalog/image/catalog/products/slturbo/turbo/АРТИКУЛ-0-600x600.jpg</code>
+    </div>
+
+    <label for="product_name">Назва товару з артикулом та виробником в дужках:</label>
+    <div class="textarea-wrapper">
+      <textarea
+        id="product_name"
+        name="product_name"
+        rows="10"
+        placeholder="Наприклад:&#10;Важіль перед. Opel Meriva Л. (RS9353 / GOODREM)"
+      ></textarea>
+      <span id="clear_icon" title="Очистити поле">×</span>
+    </div>
+
+    <div class="result-header">
+      <h3 id="resultHeaderTitle">Результат:</h3>
+      <button class="action-btn copy-btn" onclick="copyResult()">Копіювати</button>
+    </div>
+    <pre id="resultBlock"></pre>
+  </div>
+
+  <script>
+const textarea = document.getElementById('product_name');
+const resultBlock = document.getElementById('resultBlock');
+const clearIcon = document.getElementById('clear_icon');
+const resultHeaderTitle = document.getElementById('resultHeaderTitle');
+const siteModeSelect = document.getElementById('site_mode');
+const excludeBrandsCheckbox = document.getElementById('exclude_brands');
+const autoSourceByBrandCheckbox = document.getElementById('auto_source_by_brand');
+
+const excludedBrands = [
+  'HYUNDAI',
+  'KIA',
+  'PEUGEOT',
+  'CITROEN',
+  'RENAULT',
+  'TOYOTA',
+  'LEXUS',
+  'MITSUBISHI',
+  'NISSAN',
+  'HONDA',
+  'MERCEDES'
+];
+
+const brandToSiteMode = {
+ // Тільки потрібні для джерела зображень
+ 'dayco': 'dayco-img',         // dayco (prodimgs)
+ 'bga': 'bga',                 // bgautomotive.co.uk (imgs)
+ 'jp group': 'jpgroup',        // jpgroup.dk (images)
+ 'sidem': 'sidem',             // sidem.be (images)
+ 'febi bilstein': 'febi',      // febi bilstein (images)
+ 'slturbo': 'slturbo',      // slturbo (imgs)
+
+ // Усі інші бренди, ТЕПЕР БУДУТЬ ІГНОРУВАТИСЯ ЦІЄЮ МАПОЮ. Скрипт не знайде для них спеціального режиму і використає режим за замовчуванням (тобто той, що обраний у SELECT-боксі, або avdauto, як він прописаний у фолбеку).
+};
+
+// Примітки 
+const notes = {
+  avdauto: document.getElementById('note-avdauto'),
+  repart: document.getElementById('note-repart'),
+  'repart-img': document.getElementById('note-repart-img'),
+  'dayco-img': document.getElementById('note-dayco-img'),
+  'as-pl': document.getElementById('note-as-pl'),
+  asmetal: document.getElementById('note-asmetal'),
+  bga: document.getElementById('note-bga'),
+  tesma: document.getElementById('note-tesma'),
+  autotechteile: document.getElementById('note-autotechteile'),
+  jpgroup: document.getElementById('note-jpgroup'),
+  sidem: document.getElementById('note-sidem'),
+  febi: document.getElementById('note-febi'),
+  partfix: document.getElementById('note-partfix'),
+  mannfilter: document.getElementById('note-mannfilter'),
+  bestauto: document.getElementById('note-bestauto'),
+  slturbo: document.getElementById('note-slturbo')
+};
+
+textarea.addEventListener('input', generateLink);
+textarea.addEventListener('input', toggleClearIcon);
+clearIcon.addEventListener('click', clearAll);
+siteModeSelect.addEventListener('change', () => { generateLink(); updateNotes(); });
+excludeBrandsCheckbox.addEventListener('change', generateLink);
+autoSourceByBrandCheckbox.addEventListener('change', generateLink); 
+
+toggleClearIcon();
+generateLink();
+updateNotes();
+
+function updateNotes() {
+  const mode = siteModeSelect.value;
+  for (const key in notes) {
+    // Додаємо перевірку notes[key], щоб скрипт не "падав", якщо якогось блоку note не існує в HTML
+    if (notes[key]) {
+      notes[key].style.display = key === mode ? 'block' : 'none';
+    }
+  }
+}
+
+function detectSiteModeByBrand(brand) {
+  const b = brand.toLowerCase();
+  // пробуємо знайти підрядок у brandToSiteMode
+  for (const key in brandToSiteMode) {
+    if (b.indexOf(key) !== -1) return brandToSiteMode[key];
+  }
+  return null;
+}
+
+function generateLink() {
+  const lines = textarea.value.split('\n');
+  let siteMode = siteModeSelect.value;
+  const exclude = excludeBrandsCheckbox.checked;
+  const autoByBrand = autoSourceByBrandCheckbox.checked;
+  let results = [];
+
+  lines.forEach(line => {
+    const trimmedLine = line.trim();
+    if (trimmedLine === '') return;
+
+    const regex = /\(([^()]+)\s*\/\s*([^()]+)\)\s*$/;
+    const match = trimmedLine.match(regex);
+
+    if (match) {
+      let article = match[1].trim();
+      let brand = match[2].trim();
+      const brandUpper = brand.toUpperCase();
+
+      // Якщо галочка "виключити бренди" і бренд у списку — пропускаємо
+      if (exclude && excludedBrands.includes(brandUpper)) return;
+
+      // Якщо увімкнено автопідбір джерела — пробуємо визначити режим по бренду
+      let currentSiteMode = siteMode;
+      if (autoByBrand) {
+        const detected = detectSiteModeByBrand(brand);
+        if (detected) currentSiteMode = detected;
+      }
+
+      // Далі — формуємо URL відповідно до currentSiteMode (використовуємо ті ж шаблони, що в тебе)
+      let url = '';
+      if (currentSiteMode === 'avdauto') {
+        let urlArticle = article.replace(/[\s\/-]/g, '');
+        let urlBrand = brand.toLowerCase().replace(/\./g, '').replace(/\s/g, '-');
+        url = `https://avdauto.com/detail/${urlArticle}/${urlBrand}/`;
+      } else if (currentSiteMode === 'repart') {
+        let urlArticle = article.replace(/\//g, '').replace(/\./g, '').replace(/\s/g, '-');
+        let urlBrand = brand.toLowerCase().replace(/\./g, '').replace(/\s/g, '-');
+        url = `https://repart.ua/part/${urlBrand}-${urlArticle}`;
+      } else if (currentSiteMode === 'repart-img') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        let urlBrand = brand.toLowerCase().replace(/\s/g, '').replace(/\./g, '');
+
+        if (brand.toUpperCase() === 'A.B.S.') urlBrand = 'a-b-s';
+        if (brand.toUpperCase() === 'KYB') urlBrand = 'kayaba';
+
+        url = `https://repart.ua/imgs/${urlBrand}/${urlArticle}.webp`;
+      } else if (currentSiteMode === 'dayco-img') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://catdata.dayco.com/prodimgs/area1/${urlArticle}.jpg`;
+      } else if (currentSiteMode === 'as-pl') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://as-pl.com/ru/p/${urlArticle}`;
+      } else if (currentSiteMode === 'asmetal') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://www.asmetal.com/catalogue/product/${urlArticle}`;
+      } else if (currentSiteMode === 'bga') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://store.bgautomotive.co.uk/ProductImages/${urlArticle}.jpg`;
+      } else if (currentSiteMode === 'tesma') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        let urlBrand = brand.replace(/\s/g, '').replace(/\./g, '');
+        url = `https://shop.tesma.com.ua/products/${urlBrand}/${urlArticle}.html`;
+      } else if (currentSiteMode === 'autotechteile') {
+        let urlArticle = article.replace(/\s/g, '%20');
+        url = `https://autotechteile.de/uk/poshuk-zapchastyn?q=${urlArticle}`;
+      } else if (currentSiteMode === 'jpgroup') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://media.jpgroup.dk/pictures/zoom/${urlArticle}.jpg`;
+      } else if (currentSiteMode === 'sidem') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://catalogue.sidem.be/uploads/parts/${urlArticle}.jpg`;
+      } else if (currentSiteMode === 'febi') {
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
+        url = `https://cdn.partsfinder.bilsteingroup.com/pf-article-zoomed/1/${urlArticle}_1.jpg`;
+      } else if (currentSiteMode === 'partfix') {
+        let urlArticle = article.replace(/-/g, '').replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '').toLowerCase();
+        let urlBrand = brand.replace(/-/g, '').replace(/\s/g, '').replace(/\./g, '').toLowerCase();
+        url = `https://partfix.net/${urlBrand}-${urlArticle}.html`;
+      } else if (currentSiteMode === 'mannfilter') {
+        let urlArticle = article.replace(/\s/g, '').replace(/-/g, '').replace(/\//g, '').replace(/\./g, '').toLowerCase();
+        url = `https://www.mann-filter.com/en/catalog/international/search-results/product.html/${urlArticle}_mann-filter.html`;
+      } else if (currentSiteMode === 'bestauto') {
+        // правило для бренду
+        if (brand.toLowerCase() === "mahle") {
+            brand = "mahle-knecht";
+        }
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/-/g, '').toLowerCase();
+        let urlBrand = brand.replace(/’/g, '-').replace(/\s+/g, '-')/*.replace(/\s/g, '')*/.replace(/\./g, '-').replace(/-$/, '').toLowerCase();
+        url = `https://bestauto.com.ua/imgs/${urlBrand}/${urlArticle}_460x330.webp`;
+      } else if (currentSiteMode === 'slturbo') {
+        let urlArticle = article .replace(/\s/g, '') .replace(/\//g, '') .replace(/\./g, '');
+        url = `https://turbobanda.com.ua/image/cache/catalog/image/catalog/image/catalog/products/slturbo/turbo/${urlArticle}-0-600x600.jpg`;  
+      } else {
+        // Фолбек — avdauto (на випадок інших режимів)
+        let urlArticle = article.replace(/[\s\/-]/g, '');
+        let urlBrand = brand.toLowerCase().replace(/\./g, '').replace(/\s/g, '-');
+        url = `https://avdauto.com/detail/${urlArticle}/${urlBrand}/`;
+      }
+
+      results.push(`${article} ${url}`);
+    }
+  });
+
+  resultHeaderTitle.textContent = `Результат (${results.length} рядків):`;
+  resultBlock.textContent = results.join('\n');
+}
+
+function toggleClearIcon() {
+  clearIcon.style.display = textarea.value.length > 0 ? 'block' : 'none';
+}
+
+function clearAll() {
+  textarea.value = '';
+  resultBlock.textContent = '';
+  resultHeaderTitle.textContent = 'Результат:';
+  toggleClearIcon();
+  for (const key in notes) {
+    notes[key].style.display = 'none';
+  }
+  textarea.focus();
+}
+
+function copyResult() {
+  const text = resultBlock.innerText;
+  if (!text) return;
+
+  const textareaTemp = document.createElement('textarea');
+  textareaTemp.value = text;
+  textareaTemp.style.position = 'fixed';
+  textareaTemp.style.top = '-1000px';
+  document.body.appendChild(textareaTemp);
+  textareaTemp.select();
+
+  try {
+    const successful = document.execCommand('copy');
+    const button = document.querySelector('.copy-btn');
+    button.innerText = successful ? 'Скопійовано!' : 'Не вдалося скопіювати';
+    setTimeout(() => {
+      button.innerText = 'Копіювати';
+    }, 2000);
+  } catch (err) {
+    alert('Помилка копіювання');
+  }
+
+  document.body.removeChild(textareaTemp);
+}
+  </script>
+</body>
+</html>
