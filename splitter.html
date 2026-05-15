@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розділювач тексту по рядках</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        input[type="number"] {
+            width: 120px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .stats {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .results-container {
+            margin-top: 25px;
+            border-top: 2px dashed var(--border);
+            padding-top: 20px;
+        }
+
+        .block-card {
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #e2e8f0;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-copy {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-copy.copied {
+            background-color: #10b981;
+        }
+
+        .block-content {
+            padding: 12px;
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>✂️ Розділювач тексту по рядках</h1>
+    
+    <div class="form-group">
+        <label for="textInput">Вставте ваш текст сюди:</label>
+        <textarea id="textInput" placeholder="Введіть або вставте багато рядків тексту..."></textarea>
+        <div class="stats" id="lineCount">Всього рядків: 0</div>
+    </div>
+
+    <div class="controls">
+        <div class="form-group" style="margin: 0;">
+            <label for="linesPerBlock">Рядків у блоці:</label>
+            <input type="number" id="linesPerBlock" value="100" min="1">
+        </div>
+    </div>
+
+    <div class="results-container" id="resultsContainer" style="display: none;">
+        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Результати розділення:</h2>
+        <div id="blocksList"></div>
+    </div>
+</div>
+
+<script>
+    const textInput = document.getElementById('textInput');
+    const linesPerBlockInput = document.getElementById('linesPerBlock');
+    const lineCountDisplay = document.getElementById('lineCount');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const blocksList = document.getElementById('blocksList');
+
+    // Обробка подій для миттєвого реагування
+    textInput.addEventListener('input', processText);
+    linesPerBlockInput.addEventListener('input', processText);
+
+    function processText() {
+        const text = textInput.value;
+        // Розбиваємо текст на рядки (враховуємо різні переноси рядків)
+        const lines = text.split(/\r?\n/);
+        
+        // Якщо текст порожній, не рахуємо порожній рядок
+        const totalLines = text.trim() === "" ? 0 : lines.length;
+        lineCountDisplay.textContent = `Всього рядків: ${totalLines}`;
+
+        if (totalLines === 0) {
+            resultsContainer.style.display = 'none';
+            blocksList.innerHTML = '';
+            return;
+        }
+
+        const linesPerBlock = parseInt(linesPerBlockInput.value) || 100;
+        if (linesPerBlock <= 0) return;
+
+        resultsContainer.style.display = 'block';
+        blocksList.innerHTML = '';
+
+        let blockIndex = 1;
+        
+        for (let i = 0; i < lines.length; i += linesPerBlock) {
+            // Беремо шматок рядків для поточного блоку
+            const chunk = lines.slice(i, i + linesPerBlock);
+            const chunkText = chunk.join('\n');
+
+            // Створюємо елементи інтерфейсу
+            const blockCard = document.createElement('div');
+            blockCard.className = 'block-card';
+
+            const blockHeader = document.createElement('div');
+            blockHeader.className = 'block-header';
+            blockHeader.innerHTML = `
+                <span>Блок ${blockIndex} (${chunk.length} рядк.)</span>
+                <button class="btn-copy" onclick="copyBlock(this, ${blockIndex})">Копіювати</button>
+            `;
+
+            const blockContent = document.createElement('pre');
+            blockContent.className = 'block-content';
+            blockContent.id = `block-text-${blockIndex}`;
+            blockContent.textContent = chunkText;
+
+            blockCard.appendChild(blockHeader);
+            blockCard.appendChild(blockContent);
+            blocksList.appendChild(blockCard);
+
+            blockIndex++;
+        }
+    }
+
+    // Функція для копіювання
+    function copyBlock(button, index) {
+        const preElement = document.getElementById(`block-text-${index}`);
+        
+        // Використовуємо сучасний Clipboard API
+        navigator.clipboard.writeText(preElement.textContent).then(() => {
+            // Візуальний фідбек при успішному копіюванні
+            const originalText = button.textContent;
+            button.textContent = 'Скопійовано! ✓';
+            button.classList.add('copied');
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 1500);
+        }).catch(err => {
+            console.error('Помилка копіювання: ', err);
+            alert('Не вдалося скопіювати текст.');
+        });
+    }
+</script>
+
+</body>
+</html>
