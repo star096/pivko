@@ -33,6 +33,17 @@
       border-radius: 4px;
       border: 1px solid #ccc;
     }
+    .checkbox-wrap {
+      margin-top: 10px;
+    }
+    .checkbox-wrap label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      margin-top: 0;
+    }
     .textarea-wrapper {
       position: relative;
       margin-top: 15px;
@@ -101,7 +112,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Генератор посилань на артикули v4.25</h2>
+    <h2>Генератор посилань на артикули v4.26</h2>
 
     <label for="site_mode">Оберіть сайт:</label>
     <select id="site_mode">
@@ -123,35 +134,42 @@
       <option value="slturbo">turbobanda.com.ua (SLTURBO imgs)</option>
     </select>
 
-<div class="checkbox-wrap">
-  <label>
-    <input type="checkbox" id="exclude_brands" />
-    Виключити бренди: HYUNDAI, KIA, PEUGEOT, CITROEN, RENAULT, TOYOTA, MITSUBISHI та інші атомобільні бренди.
-  </label>
-</div>
+    <div class="checkbox-wrap" style="margin-top: 15px;">
+      <label>
+        <input type="checkbox" id="exclude_brands" />
+        Виключити бренди: HYUNDAI, KIA, PEUGEOT, CITROEN, RENAULT, TOYOTA, MITSUBISHI та інші автомобільні бренди.
+      </label>
+    </div>
 
-<div class="checkbox-wrap">
-  <label>
-    <input type="checkbox" id="auto_source_by_brand" />
-    Автоматично підбирати джерело зображення за брендом *(тільки для imgs)
-  </label>
-</div>
+    <div class="checkbox-wrap">
+      <label>
+        <input type="checkbox" id="auto_source_by_brand" />
+        Автоматично підбирати джерело зображення за брендом *(тільки для imgs)
+      </label>
+    </div>
+
+    <div class="checkbox-wrap">
+      <label>
+        <input type="checkbox" id="append_brand_to_article" />
+        Додати бренд до артикула через дефіс (наприклад: АРТИКУЛ-БРЕНД)
+      </label>
+    </div>
 
     <div id="note-autotechteile" class="note">Клас для пошуку фото — <code>search-result-image</code></div>
-    <div id="note-jpgroup" class="note">По JP GROUP генеруються прямі посилання для скачуання потірбних зображень, типу - <code>https://media.jpgroup.dk/pictures/zoom/4381203800.jpg</code> Можуть бути ще мальнікі фото - https://media.jpgroup.dk/pictures/product/1581205900.jpg</div>
+    <div id="note-jpgroup" class="note">По JP GROUP генеруються прямі посилання для скачування потрібних зображень, типу - <code>https://media.jpgroup.dk/pictures/zoom/4381203800.jpg</code> Можуть бути ще маленькі фото - https://media.jpgroup.dk/pictures/product/1581205900.jpg</div>
     <div id="note-avdauto" class="note">Формат: /detail/АРТИКУЛ/БРЕНД/</div>
     <div id="note-repart" class="note">Формат: /part/БРЕНД-АРТИКУЛ</div>
-    <div id="note-repart-img" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /imgs/БРЕНД/АРТИКУЛ.webp</div>
-    <div id="note-dayco-img" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /prodimgs/area1/АРТИКУЛ.jpg</div>
+    <div id="note-repart-img" class="note">генеруються прямі посилання для скачування потрібних зображень, типу - /imgs/БРЕНД/АРТИКУЛ.webp</div>
+    <div id="note-dayco-img" class="note">генеруються прямі посилання для скачування потрібних зображень, типу - /prodimgs/area1/АРТИКУЛ.jpg</div>
     <div id="note-as-pl" class="note">Формат: /ru/p/АРТИКУЛ</div>
     <div id="note-asmetal" class="note">Формат: /catalogue/product/АРТИКУЛ</div>
-    <div id="note-bga" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /ProductImages/АРТИКУЛ.jpg</div>
+    <div id="note-bga" class="note">генеруються прямі посилання для скачування потрібних зображень, типу - /ProductImages/АРТИКУЛ.jpg</div>
     <div id="note-tesma" class="note">Формат: /products/БРЕНД/АРТИКУЛ.html</div>
-    <div id="note-sidem" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /uploads/parts/АРТИКУЛ.jpg</div>
-    <div id="note-febi" class="note">генеруються прямі посилання для скачуання потірбних зображень, типу - /pf-article-zoomed/1/АРТИКУЛ_1.jpg</div>
+    <div id="note-sidem" class="note">генеруються прямі посилання для скачування потрібних зображень, типу - /uploads/parts/АРТИКУЛ.jpg</div>
+    <div id="note-febi" class="note">генеруються прямі посилання для скачування потрібних зображень, типу - /pf-article-zoomed/1/АРТИКУЛ_1.jpg</div>
     <div id="note-partfix" class="note">Формат: /БРЕНД/АРТИКУЛ.html Клас для пошуку фото — card__main-img</div>
     <div id="note-mannfilter" class="note">Формат: /product.html/АРТИКУЛбезпробілів_mann-filter.html Клас для пошуку фото — cmp-product__gallery-container--dynamic</div>
-    <div id="note-bestauto" class="note">Генеруються прямі посилання для скачуання потірбних зображень, типу - <code>https://bestauto.com.ua/imgs/goodrem/АРТИКУЛ_460x330.webp</code> <br>A.B.S., MOOG, FAST ... *є багато різних брендів, потрібно перевіряти</div>
+    <div id="note-bestauto" class="note">Генеруються прямі посилання для скачування потрібних зображень, типу - <code>https://bestauto.com.ua/imgs/goodrem/АРТИКУЛ_460x330.webp</code> <br>A.B.S., MOOG, FAST ... *є багато різних брендів, потрібно перевіряти</div>
     <div id="note-slturbo" class="note">Генеруються прямі посилання для скачування зображень, типу -
       <code>https://turbobanda.com.ua/image/cache/catalog/image/catalog/image/catalog/products/slturbo/turbo/АРТИКУЛ-0-600x600.jpg</code>
     </div>
@@ -182,6 +200,7 @@ const resultHeaderTitle = document.getElementById('resultHeaderTitle');
 const siteModeSelect = document.getElementById('site_mode');
 const excludeBrandsCheckbox = document.getElementById('exclude_brands');
 const autoSourceByBrandCheckbox = document.getElementById('auto_source_by_brand');
+const appendBrandCheckbox = document.getElementById('append_brand_to_article');
 
 const excludedBrands = [
   'HYUNDAI',
@@ -198,18 +217,14 @@ const excludedBrands = [
 ];
 
 const brandToSiteMode = {
- // Тільки потрібні для джерела зображень
- 'dayco': 'dayco-img',         // dayco (prodimgs)
- 'bga': 'bga',                 // bgautomotive.co.uk (imgs)
- 'jp group': 'jpgroup',        // jpgroup.dk (images)
- 'sidem': 'sidem',             // sidem.be (images)
- 'febi bilstein': 'febi',      // febi bilstein (images)
- 'slturbo': 'slturbo',      // slturbo (imgs)
-
- // Усі інші бренди, ТЕПЕР БУДУТЬ ІГНОРУВАТИСЯ ЦІЄЮ МАПОЮ. Скрипт не знайде для них спеціального режиму і використає режим за замовчуванням (тобто той, що обраний у SELECT-боксі, або avdauto, як він прописаний у фолбеку).
+ 'dayco': 'dayco-img',
+ 'bga': 'bga',
+ 'jp group': 'jpgroup',
+ 'sidem': 'sidem',
+ 'febi bilstein': 'febi',
+ 'slturbo': 'slturbo',
 };
 
-// Примітки 
 const notes = {
   avdauto: document.getElementById('note-avdauto'),
   repart: document.getElementById('note-repart'),
@@ -235,6 +250,7 @@ clearIcon.addEventListener('click', clearAll);
 siteModeSelect.addEventListener('change', () => { generateLink(); updateNotes(); });
 excludeBrandsCheckbox.addEventListener('change', generateLink);
 autoSourceByBrandCheckbox.addEventListener('change', generateLink); 
+appendBrandCheckbox.addEventListener('change', generateLink); 
 
 toggleClearIcon();
 generateLink();
@@ -243,7 +259,6 @@ updateNotes();
 function updateNotes() {
   const mode = siteModeSelect.value;
   for (const key in notes) {
-    // Додаємо перевірку notes[key], щоб скрипт не "падав", якщо якогось блоку note не існує в HTML
     if (notes[key]) {
       notes[key].style.display = key === mode ? 'block' : 'none';
     }
@@ -252,7 +267,6 @@ function updateNotes() {
 
 function detectSiteModeByBrand(brand) {
   const b = brand.toLowerCase();
-  // пробуємо знайти підрядок у brandToSiteMode
   for (const key in brandToSiteMode) {
     if (b.indexOf(key) !== -1) return brandToSiteMode[key];
   }
@@ -264,6 +278,7 @@ function generateLink() {
   let siteMode = siteModeSelect.value;
   const exclude = excludeBrandsCheckbox.checked;
   const autoByBrand = autoSourceByBrandCheckbox.checked;
+  const appendBrand = appendBrandCheckbox.checked;
   let results = [];
 
   lines.forEach(line => {
@@ -278,17 +293,14 @@ function generateLink() {
       let brand = match[2].trim();
       const brandUpper = brand.toUpperCase();
 
-      // Якщо галочка "виключити бренди" і бренд у списку — пропускаємо
       if (exclude && excludedBrands.includes(brandUpper)) return;
 
-      // Якщо увімкнено автопідбір джерела — пробуємо визначити режим по бренду
       let currentSiteMode = siteMode;
       if (autoByBrand) {
         const detected = detectSiteModeByBrand(brand);
         if (detected) currentSiteMode = detected;
       }
 
-      // Далі — формуємо URL відповідно до currentSiteMode (використовуємо ті ж шаблони, що в тебе)
       let url = '';
       if (currentSiteMode === 'avdauto') {
         let urlArticle = article.replace(/[\s\/-]/g, '');
@@ -342,24 +354,25 @@ function generateLink() {
         let urlArticle = article.replace(/\s/g, '').replace(/-/g, '').replace(/\//g, '').replace(/\./g, '').toLowerCase();
         url = `https://www.mann-filter.com/en/catalog/international/search-results/product.html/${urlArticle}_mann-filter.html`;
       } else if (currentSiteMode === 'bestauto') {
-        // правило для бренду
+        let currentBrandForUrl = brand;
         if (brand.toLowerCase() === "mahle") {
-            brand = "mahle-knecht";
+          currentBrandForUrl = "mahle-knecht";
         }
         let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/-/g, '').toLowerCase();
-        let urlBrand = brand.replace(/’/g, '-').replace(/\s+/g, '-')/*.replace(/\s/g, '')*/.replace(/\./g, '-').replace(/-$/, '').toLowerCase();
+        let urlBrand = currentBrandForUrl.replace(/’/g, '-').replace(/\s+/g, '-').replace(/\./g, '-').replace(/-$/, '').toLowerCase();
         url = `https://bestauto.com.ua/imgs/${urlBrand}/${urlArticle}_460x330.webp`;
       } else if (currentSiteMode === 'slturbo') {
-        let urlArticle = article .replace(/\s/g, '') .replace(/\//g, '') .replace(/\./g, '');
+        let urlArticle = article.replace(/\s/g, '').replace(/\//g, '').replace(/\./g, '');
         url = `https://turbobanda.com.ua/image/cache/catalog/image/catalog/image/catalog/products/slturbo/turbo/${urlArticle}-0-600x600.jpg`;  
       } else {
-        // Фолбек — avdauto (на випадок інших режимів)
         let urlArticle = article.replace(/[\s\/-]/g, '');
         let urlBrand = brand.toLowerCase().replace(/\./g, '').replace(/\s/g, '-');
         url = `https://avdauto.com/detail/${urlArticle}/${urlBrand}/`;
       }
 
-      results.push(`${article} ${url}`);
+      // Формуємо фінальний вигляд рядка в залежності від галочки
+      let displayArticle = appendBrand ? `${article}-${brand}` : article;
+      results.push(`${displayArticle} ${url}`);
     }
   });
 
